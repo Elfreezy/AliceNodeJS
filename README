@@ -1,0 +1,33 @@
+Требуемые пакеты:
+- micro
+- nodemon
+
+Команда установки пакета:
+>> npm install <package_name>
+
+Запуск сервера:
+>> node index.js		// Server started on http://localhost:3000, tunnel: http://localhost:4040
+						// ctrl+C выход 
+>> npx nodemon index.js	// Альтернатива при разработке. Для отслеживания изменений
+
+Запуск туннелера ngrok:
+>> ngrok http 4040
+
+
+Заменить структуру
+{
+	"keywords": {
+		0: {word: "расписание", "answer": ""}, 
+		1: {word: "расположение", "answer": ""}, 
+		2: {word: "скидки", "answer": ""}, 
+		3: {word: "контакты", "answer": ""}, 
+	},
+	"regKeywords": {
+		0: "расписан", 
+		1: "расположен", 
+		2: "скидк", 
+		3: "контакт"
+	},
+	"facts": []
+}
+
