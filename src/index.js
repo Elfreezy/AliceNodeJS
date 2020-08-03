@@ -1,3 +1,10 @@
+/*
+* fileKyeword - ссылается для данных, имеющее структуру словаря из файла {}. Содержит ключи keyword | answer
+* regKeyword - ссылается для данных, имеющее структуру values под ключом regKeywords из файла. расписан | расположен
+*
+*
+*/
+
 const micro = require('micro')
 const replies = require('./replies.js')
 const fs = require('fs');
@@ -25,6 +32,7 @@ const createUserAnswer = (request) => {
 	return response;
 }
 
+
 // Доставать ключи без значений и формировать массив keywords???
 // @param {Number} state
 const checkButtonState = (request) => {
@@ -40,7 +48,6 @@ const checkButtonState = (request) => {
 			return replies.offerKeywords();
 		case 3:
 			keywords = getArrayOfKeywords().join(' | ')
-			console.log(keywords)
 			return replies.giveKeywords(keywords);
 	}
 }
@@ -53,11 +60,10 @@ function readFileKeywordsFacts(fileName) {
 }
 
 
-
 function getArrayOfKeywords() {
 	let fileKeywords = Object.values(FILEDATA.keywords)
 	let arrayKeywords = []
-	fileKeywords.map(({keyword, answer}) => {
+	fileKeywords.map(({keyword}) => {
 		arrayKeywords.push(keyword)
 	})
 	return arrayKeywords;
@@ -65,13 +71,37 @@ function getArrayOfKeywords() {
 
 
 // @param {String} keyword
-function checkKeyword(keyword) {
-	const regKeywords = FILEDATA.regKeywords
+// Возвращает keyword необходимое для сравнения с regKeywords
+function getRegKeyword(keyword) {
+	const regKeywords = Object.values(FILEDATA.regKeywords)
 	for (let index = 0; index < regKeywords.length; index++) {
 		regKeyword = regKeywords[index]
-		if (keyword.includes(regKeyword)) return replies.giveKeywords(regKeyword);
+		if (keyword.includes(regKeyword)) return regKeyword;
 	}
-	return replies.giveKeywords('Ничего не найдено');
+	return 'Ничего не найдено';
+}
+
+
+function findIndexOfRegKeyword(regKeyword) {
+	let fileRegKeywords = FILEDATA.regKeywords
+	for (let index in fileRegKeywords) {
+		if (fileRegKeywords[index] === regKeyword) return index;
+	}
+	return -1;
+}
+
+
+function findAnswerForKeyword(keyword) {
+	let fileKeywords = FILEDATA.keywords
+	let regKeyword = getRegKeyword(keyword)
+
+	console.log(`findAnswerForKeyword: ${regKeyword}`)
+
+	let indexOfRegKeyword = findIndexOfRegKeyword(regKeyword)
+	if (indexOfRegKeyword === -1) return replies.getAnswerForKeywoard('Index of keyword is not found');
+
+	let fileKeyword = fileKeywords[indexOfRegKeyword]
+	return replies.getAnswerForKeywoard(fileKeyword.answer);
 }
 
 
@@ -83,12 +113,13 @@ function isEmpty(obj) {
 	return true;
 }
 
+
 // Проверяет на наличие intent id == asd123
 // Базовые интенты игнорируются
 function checkIntents(request) {
 	intents = request.nlu.intents
 	response = (typeof intents.asd123 !== 'undefined')
-	? checkKeyword(intents.asd123.slots.what.value)
+	? findAnswerForKeyword(intents.asd123.slots.what.value)
 	: replies.firstUserAnswer()
 	return response
 }

@@ -2,6 +2,7 @@
 // number:
 // 1 - факт
 // 2 - вопрос
+// 3 - ключевые слова
 
 exports.welcome = () => {
 	return {
@@ -72,6 +73,22 @@ exports.giveKeywords = (keywords) => {
 	response: {
       text: keywords,
       tts: keywords,
+      buttons: [
+      	{title: 'Узнать факт', payload: {state: 1}, hide: true},
+      	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
+      ],
+      end_session: false
+    },
+    version: '1.0'
+	};
+}
+
+// @param {String} fact
+exports.getAnswerForKeywoard = (answer) => {
+	return {
+	response: {
+      text: answer,
+      tts: answer,
       buttons: [
       	{title: 'Продолжить', payload: {state: 1}, hide: true},
       	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
