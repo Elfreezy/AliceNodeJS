@@ -5,11 +5,12 @@
 // 3 - ключевые слова
 
 exports.welcome = () => {
+	const answer = getRandomElement(['Хочу', 'Продолжить'])
 	return {
 		text: 'Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
       	tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
       	buttons: [
-      		{title: 'Да', payload: {state: 0},hide: true}
+      		{title: answer, payload: {state: 0},hide: true}
       	],
       	end_session: false
 	};
@@ -45,8 +46,8 @@ exports.giveFact = (fact) => {
 
 exports.offerKeywords = () => {
 	return {
-		text: 'Начиная со слов "хочу узнать о", используйте ключевое слово. Хотите узнать пару таких?',
-      	tts: 'Начиная со слов "хочу узнать о", используйте ключевое слово. Хотите узнать пару таких?',
+		text: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
+      	tts: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
       	buttons: [
       		{title: 'Ключевые слова', payload: {state: 3}, hide: true},
       	],
@@ -59,14 +60,15 @@ exports.offerKeywords = () => {
 exports.giveKeywords = (keywords) => {
 	return {
 		text: keywords,
-    	  tts: keywords,
-    	  buttons: [
-   		   	{title: 'Узнать факт', payload: {state: 1}, hide: true},
-    	  	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
+    	tts: keywords,
+    	buttons: [
+   			{title: 'Узнать факт', payload: {state: 1}, hide: true},
+    		{title: 'Задать вопрос', payload: {state: 2}, hide: true}
    	    ],
         end_session: false
 	};
 }
+
 
 // @param {String} fact
 exports.getAnswerForKeywoard = (answer) => {
@@ -81,6 +83,21 @@ exports.getAnswerForKeywoard = (answer) => {
 	};
 }
 
+
+exports.goodbye = () => {
+	const answer = getRandomElement(['Пока', 'До встречи', 'До свидания', 'Удачи'])
+	return {
+		text: answer,
+      	tts: answer,
+     	end_session: true
+	};
+}
+
+
+function getRandomElement(arr) {
+  const index = Math.floor(Math.random() * arr.length);
+  return arr[index];
+}
 
 // exports.test = () => {
 // 	const fileData = fs.readFileSync('metadata.json', 'utf8')

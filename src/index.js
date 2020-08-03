@@ -6,8 +6,8 @@ const micro = require('micro')
 const replies = require('./replies.js')
 const reader = require('./reader.js')
 
-let FILEDATA = reader.readFile('metadata.json')
-
+const FILEDATA = reader.readFile('metadata.json')
+const ARRAYKEYWORDS = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
 
 const server = micro(async (req, res) => {
 	if (req.method !== 'POST') {
@@ -27,16 +27,14 @@ const server = micro(async (req, res) => {
 
 const createUserAnswer = (request) => {
 	response = isEmpty(request.nlu.intents)
-	? checkButtonState(request)
+	? checkUnknownMessage(request)
 	: checkIntents(request)
 	return response;
 }
 
 
 // @param {Number} state
-const checkButtonState = (request) => {
-	state = request.payload.state
-
+const checkButtonState = (state) => {
 	switch(state) {
 		case 0:
 			return replies.firstUserAnswer();
@@ -46,21 +44,39 @@ const checkButtonState = (request) => {
 		case 2:
 			return replies.offerKeywords();
 		case 3:
-			arrayKeywords = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
-			return replies.giveKeywords(arrayKeywords.join(' | '));
+			return replies.giveKeywords(ARRAYKEYWORDS.join(', '));
 	}
 }
 
 
-// Проверяет на наличие intent id == asd123
-// Базовые интенты игнорируются
+// Базовые интенты игнорируют аудио ответ
 function checkIntents(request) {
 	intents = request.nlu.intents
-	if (typeof intents.asd123 !== 'undefined') {
-		let answer = reader.findAnswerForKeyword(FILEDATA, intents.asd123.slots.what.value)
-		return replies.getAnswerForKeywoard(answer);
+	if (isEmpty(intents)) {
+		return replies.firstUserAnswer()
 	}
-	return replies.firstUserAnswer()
+	
+	let intent = Object.keys(intents)[0]
+	switch(intent) {
+		case 'sad1':
+			return checkButtonState(3);
+		case 'asd123':
+			let answer = reader.findAnswerForKeyword(FILEDATA, intents.asd123.slots.what.value)
+			return replies.getAnswerForKeywoard(answer);
+		case 'goodbye':
+			return replies.goodbye();
+		case 'YANDEX.CONFIRM':
+			return checkUnknownMessage(request);
+	}
+}
+
+
+// В эту ф-цию попадают msg не имеющие интентов
+function checkUnknownMessage(request) {
+	let response = isEmpty(request.payload)
+	? replies.firstUserAnswer()
+	: checkButtonState(request.payload.state)
+	return response
 }
 
 
