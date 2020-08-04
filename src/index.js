@@ -7,7 +7,8 @@ const replies = require('./replies.js')
 const reader = require('./reader.js')
 
 const FILEDATA = reader.readFile('metadata.json')
-const ARRAYKEYWORDS = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+// Если будет много обращений к массиву keywords 
+// const ARRAYKEYWORDS = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
 
 const server = micro(async (req, res) => {
 	if (req.method !== 'POST') {
@@ -44,7 +45,8 @@ const checkButtonState = (state) => {
 		case 2:
 			return replies.offerKeywords();
 		case 3:
-			return replies.giveKeywords(ARRAYKEYWORDS.join(', '));
+			const arrayKeywords = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+			return replies.giveKeywords(arrayKeywords.join(', '));
 	}
 }
 
@@ -63,8 +65,8 @@ function checkIntents(request) {
 		case 'asd123':
 			let value = intents.asd123.slots.what.value
 			let index = reader.findIndexOfKeyword(FILEDATA, value)
-			let answer = FILEDATA['keywords'][index]['answer']
-			return replies.getAnswerForKeywoard(answer);
+			let item = FILEDATA['keywords'][index]
+			return replies.getAnswerForKeywoard(item);
 		case 'goodbye':
 			return replies.goodbye();
 		case 'YANDEX.CONFIRM':
