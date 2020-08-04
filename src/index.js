@@ -78,11 +78,11 @@ function checkIntents(request, sessionState) {
 	
 	let intent = Object.keys(intents)[0]
 	switch(intent) {
-		case 'kWord':
-			return checkButtonState(3, sessionState);
+		case 'commands':
+			let buttonKey = getButtonKey(intents.commands.slots.what.value)
+			return checkButtonState(buttonKey, sessionState);
 		case 'toKnow':
-			let value = intents.toKnow.slots.what.value
-			let index = reader.findIndexOfKeyword(FILEDATA, value)
+			let index = reader.findIndexOfKeyword(FILEDATA, intents.toKnow.slots.what.value)
 			let item = FILEDATA['keywords'][index]
 			return replies.getAnswerForKeywoard(item);
 		case 'goodbye':
@@ -94,6 +94,14 @@ function checkIntents(request, sessionState) {
 	}
 }
 
+
+// Изменить при масштабировании приложения
+function getButtonKey(value) {
+	let arr = value.split(' ')
+	if (arr.length === 2) return 3;
+	if (reader.deleteLastLettersNoun(arr[0]) === 'факт') return 1;
+	return 2;
+}
 
 // В эту ф-цию попадают msg не имеющие интентов
 // Будет производиться проверка session_state
