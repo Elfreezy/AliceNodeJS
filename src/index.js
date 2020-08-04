@@ -7,7 +7,11 @@ const replies = require('./replies.js')
 const reader = require('./reader.js')
 const gfn = require('./gfn.js')
 
-const FILEDATA = reader.readFile('metadata.json')
+const path = require("path");
+const filename = "metadata.json";
+const jsonPath = path.resolve(path.join(__dirname, filename));
+
+const FILEDATA = reader.readFile(jsonPath)
 // Если будет много обращений к массиву keywords 
 // const ARRAYKEYWORDS = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
 
@@ -123,6 +127,6 @@ function isEmpty(obj) {
 }
 
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 server.listen(PORT, () => console.log(`Server started on http://localhost:${PORT}`))
 
