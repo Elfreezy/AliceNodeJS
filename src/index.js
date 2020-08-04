@@ -61,7 +61,9 @@ function checkIntents(request) {
 		case 'sad1':
 			return checkButtonState(3);
 		case 'asd123':
-			let answer = reader.findAnswerForKeyword(FILEDATA, intents.asd123.slots.what.value)
+			let value = intents.asd123.slots.what.value
+			let index = reader.findIndexOfKeyword(FILEDATA, value)
+			let answer = FILEDATA['keywords'][index]['answer']
 			return replies.getAnswerForKeywoard(answer);
 		case 'goodbye':
 			return replies.goodbye();

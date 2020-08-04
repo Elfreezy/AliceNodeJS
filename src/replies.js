@@ -8,11 +8,11 @@ exports.welcome = () => {
 	const answer = getRandomElement(['Хочу', 'Продолжить'])
 	return {
 		text: 'Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
-      	tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
-      	buttons: [
-      		{title: answer, payload: {state: 0},hide: true}
-      	],
-      	end_session: false
+    tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
+    buttons: [
+      {title: answer, payload: {state: 0},hide: true}
+    ],
+    end_session: false
 	};
 }
 
@@ -20,12 +20,12 @@ exports.welcome = () => {
 exports.firstUserAnswer = () => {
 	return {
 		text: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
-      	tts: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
-      	buttons: [
-      		{title: 'Факт', payload: {state: 1}, hide: true},
-      		{title: 'Вопрос', payload: {state: 2}, hide: true}
-      	],
-      	end_session: false
+    tts: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
+    buttons: [
+      {title: 'Факт', payload: {state: 1}, hide: true},
+      {title: 'Вопрос', payload: {state: 2}, hide: true}
+    ],
+    end_session: false
 	};
 }
 
@@ -34,12 +34,12 @@ exports.firstUserAnswer = () => {
 exports.giveFact = (fact) => {
 	return {
 		text: fact,
-    	tts: fact,
-    	buttons: [
-     		{title: 'Продолжить', payload: {state: 1}, hide: true},
-     		{title: 'Задать вопрос', payload: {state: 2}, hide: true}
-    	],
-    	end_session: false
+    tts: fact,
+    buttons: [
+     	{title: 'Продолжить', payload: {state: 1}, hide: true},
+     	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
+    ],
+    end_session: false
   	};
 }
 
@@ -47,11 +47,11 @@ exports.giveFact = (fact) => {
 exports.offerKeywords = () => {
 	return {
 		text: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
-      	tts: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
-      	buttons: [
-      		{title: 'Ключевые слова', payload: {state: 3}, hide: true},
-      	],
-      	end_session: false
+    tts: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
+    buttons: [
+      {title: 'Ключевые слова', payload: {state: 3}, hide: true},
+    ],
+    end_session: false
 	};
 }
 
@@ -60,12 +60,12 @@ exports.offerKeywords = () => {
 exports.giveKeywords = (keywords) => {
 	return {
 		text: keywords,
-    	tts: keywords,
-    	buttons: [
-   			{title: 'Узнать факт', payload: {state: 1}, hide: true},
-    		{title: 'Задать вопрос', payload: {state: 2}, hide: true}
-   	    ],
-        end_session: false
+    tts: keywords,
+    buttons: [
+   		{title: 'Узнать факт', payload: {state: 1}, hide: true},
+    	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
+   	],
+    end_session: false
 	};
 }
 
@@ -74,12 +74,12 @@ exports.giveKeywords = (keywords) => {
 exports.getAnswerForKeywoard = (answer) => {
 	return {
 		text: answer,
-      	tts: answer,
-      	buttons: [
-      		{title: 'Узнать факт', payload: {state: 1}, hide: true},
-      		{title: 'Задать вопрос', payload: {state: 2}, hide: true}
-     	],
-     	end_session: false
+    tts: answer,
+    buttons: [
+      {title: 'Узнать факт', payload: {state: 1}, hide: true},
+      {title: 'Задать вопрос', payload: {state: 2}, hide: true}
+    ],
+    end_session: false
 	};
 }
 
@@ -88,8 +88,8 @@ exports.goodbye = () => {
 	const answer = getRandomElement(['Пока', 'До встречи', 'До свидания', 'Удачи'])
 	return {
 		text: answer,
-      	tts: answer,
-     	end_session: true
+    tts: answer,
+    end_session: true
 	};
 }
 
