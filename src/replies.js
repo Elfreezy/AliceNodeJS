@@ -1,8 +1,7 @@
-//  payload: {state: number}
-// number:
-// 1 - факт
-// 2 - вопрос
-// 3 - ключевые слова
+/*
+*   Модуль работы с репликами Алисы
+*   payload.state {1 - факт, 2 - вопрос, 3 - ключевые слова}
+*/
 
 const gfn = require('./gfn.js')
 
@@ -38,6 +37,12 @@ exports.giveFact = (fact) => {
 	return {
 		text: fact.text,
     tts: fact.text,
+    card: {
+      type: 'BigImage',
+      image_id: fact.image_id,
+      title: fact.title,
+      description: fact.text
+    },
     buttons: [
      	{title: 'Продолжить', payload: {state: 1}, hide: true},
      	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
@@ -95,16 +100,3 @@ exports.goodbye = () => {
     end_session: true
 	};
 }
-
-// exports.test = () => {
-// 	const fileData = fs.readFileSync('metadata.json', 'utf8')
-// 	data = JSON.parse(fileData);
-
-// 	let fileKeywords = Object.values(data.keywords)
-// 	let arrayKeywords = []
-// 	fileKeywords.map(({keyword, answer}) => {
-// 		console.log(keyword)
-// 		// arrayKeywords.push(entry.keyword)
-// 	})
-// 	return arrayKeywords;
-// }
