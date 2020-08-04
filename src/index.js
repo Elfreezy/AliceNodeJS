@@ -5,6 +5,7 @@
 const micro = require('micro')
 const replies = require('./replies.js')
 const reader = require('./reader.js')
+const gfn = require('./gfn.js')
 
 const FILEDATA = reader.readFile('metadata.json')
 // Если будет много обращений к массиву keywords 
@@ -40,7 +41,7 @@ const checkButtonState = (state) => {
 		case 0:
 			return replies.firstUserAnswer();
 		case 1:
-			fact = 'Интересный факт'
+			let fact = gfn.getRandomElement(Object.values(FILEDATA.facts))
 			return replies.giveFact(fact);
 		case 2:
 			return replies.offerKeywords();

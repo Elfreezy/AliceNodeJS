@@ -4,8 +4,11 @@
 // 2 - вопрос
 // 3 - ключевые слова
 
+const gfn = require('./gfn.js')
+
+
 exports.welcome = () => {
-	const answer = getRandomElement(['Хочу', 'Продолжить'])
+	const answer = gfn.getRandomElement(['Хочу', 'Продолжить'])
 	return {
 		text: 'Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
     tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
@@ -33,8 +36,8 @@ exports.firstUserAnswer = () => {
 // @param {String} fact
 exports.giveFact = (fact) => {
 	return {
-		text: fact,
-    tts: fact,
+		text: fact.text,
+    tts: fact.text,
     buttons: [
      	{title: 'Продолжить', payload: {state: 1}, hide: true},
      	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
@@ -85,18 +88,12 @@ exports.getAnswerForKeywoard = (item) => {
 
 
 exports.goodbye = () => {
-	const answer = getRandomElement(['Пока', 'До встречи', 'До свидания', 'Удачи'])
+	const answer = gfn.getRandomElement(['Пока', 'До встречи', 'До свидания', 'Удачи'])
 	return {
 		text: answer,
     tts: answer,
     end_session: true
 	};
-}
-
-
-function getRandomElement(arr) {
-  const index = Math.floor(Math.random() * arr.length);
-  return arr[index];
 }
 
 // exports.test = () => {
