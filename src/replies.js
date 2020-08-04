@@ -19,7 +19,8 @@ exports.welcome = () => {
 }
 
 
-exports.firstUserAnswer = () => {
+exports.firstUserAnswer = (sessionState) => {
+  sessionState.value = 10
 	return {
 		text: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
     tts: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
@@ -33,7 +34,8 @@ exports.firstUserAnswer = () => {
 
 
 // @param {String} fact
-exports.giveFact = (fact) => {
+exports.giveFact = (fact, sessionState) => {
+  sessionState.value = 20
 	return {
 		text: fact.text,
     tts: fact.text,
