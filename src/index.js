@@ -48,7 +48,8 @@ const checkButtonState = (state, sessionState) => {
 		case 2:
 			return replies.offerKeywords();
 		case 3:
-			const arrayKeywords = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+			arrayKeywords = gfn.getRandomArray(arrayKeywords, 5)
 			return replies.giveKeywords(arrayKeywords.join(', '));
 	}
 }

@@ -22,8 +22,8 @@ exports.welcome = () => {
 exports.firstUserAnswer = (sessionState) => {
   sessionState.value = 10
 	return {
-		text: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
-    tts: 'Хотите погрузиться в мир дизайна и искусства или зададите конкретный вопрос?',
+		text: 'Хотите погрузиться в мир дизайна и искусства или зададите вопрос о школе?',
+    tts: 'Хотите погрузиться в мир дизайна и искусства или зададите вопрос о школе?',
     buttons: [
       {title: 'Факт', payload: {state: 1}, hide: true},
       {title: 'Вопрос', payload: {state: 2}, hide: true}
@@ -38,7 +38,7 @@ exports.giveFact = (fact, sessionState) => {
   sessionState.value = 20
 	return {
 		text: fact.text,
-    tts: fact.text,
+    tts: '<speaker audio="alice-sounds-game-ping-1.opus">' + fact.text,
     card: {
       type: 'BigImage',
       image_id: fact.image_id,
@@ -59,6 +59,7 @@ exports.offerKeywords = () => {
 		text: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
     tts: 'Начиная со слов "хочу узнать о", используйте ключевое слово.',
     buttons: [
+      {title: 'Интересные факты', payload: {state: 1}, hide: true},
       {title: 'Ключевые слова', payload: {state: 3}, hide: true},
     ],
     end_session: false
@@ -72,8 +73,8 @@ exports.giveKeywords = (keywords) => {
 		text: keywords,
     tts: keywords,
     buttons: [
-   		{title: 'Узнать факт', payload: {state: 1}, hide: true},
-    	{title: 'Задать вопрос', payload: {state: 2}, hide: true}
+      {title: 'Задать вопрос', payload: {state: 2}, hide: true},
+    	{title: 'Узнать еще', payload: {state: 3}, hide: true}
    	],
     end_session: false
 	};
