@@ -1,9 +1,15 @@
+## Commands
+
 **Требуемые пакеты:**
 - micro
 - nodemon
 
+**Установка зависимостей**
+> npm i
+
 **Команда установки пакета:**
 > npm install <package_name>
+
 
 **Запуск сервера:**
 > node index.js			// Server started on http://localhost:3000
