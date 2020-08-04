@@ -3,14 +3,14 @@
 - nodemon
 
 **Команда установки пакета:**
->> npm install <package_name>
+> npm install <package_name>
 
 **Запуск сервера:**
->> node index.js		// Server started on http://localhost:3000
->> npx nodemon index.js	// Альтернатива при разработке. Для отслеживания изменений
+> node index.js		// Server started on http://localhost:3000
+> npx nodemon index.js	// Альтернатива при разработке. Для отслеживания изменений
 
 **Запуск туннелера ngrok:**
->> ngrok http 4040
+> ngrok http 4040
 
 
 *Ближайшее:*
