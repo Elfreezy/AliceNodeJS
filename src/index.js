@@ -3,9 +3,11 @@
 */
 
 const micro = require('micro')
+
 const replies = require('./replies.js')
 const reader = require('./reader.js')
 const gfn = require('./gfn.js')
+const langWorker = require('./language_worker.js');
 
 
 const FILEDATA = reader.readFile('metadata.json')
@@ -47,7 +49,7 @@ const checkButtonState = (state, sessionState) => {
 		case 2:
 			return replies.offerKeywords();
 		case 3:
-			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'questions', 'keywords')
 			arrayKeywords = gfn.getRandomArray(arrayKeywords, 5)
 			return replies.giveKeywords(arrayKeywords.join(', '));
 	}
@@ -81,8 +83,8 @@ function checkIntents(request, sessionState) {
 			let buttonKey = getButtonKey(intents.commands.slots.what.value)
 			return checkButtonState(buttonKey, sessionState);
 		case 'toKnow':
-			let index = reader.findIndexOfKeyword(FILEDATA, intents.toKnow.slots.what.value)
-			let item = FILEDATA['keywords'][index]
+			let arrValues = intents.toKnow.slots.what.value.split(' ')
+			let item = reader.findFileQuestion(FILEDATA, arrValues)
 			return replies.getAnswerForKeywoard(item);
 		case 'goodbye':
 			return replies.goodbye();
@@ -94,10 +96,11 @@ function checkIntents(request, sessionState) {
 }
 
 // Изменить при масштабировании приложения
+// Аналог функции reader.findIndexOfKeyword для commands
 function getButtonKey(value) {
 	let arr = value.split(' ')
 	if (arr.length === 2) return 3;
-	if (reader.deleteLastLettersNoun(arr[0]) === 'факт') return 1;
+	if (langWorker.wordParsing(arr[0]).normalize().word === 'факт') return 1;
 	return 2;
 }
 

@@ -16,26 +16,51 @@ function readFile(fileName) {
 }
 
 // Достает из obj - {} массив значений с необходимым ключом
+// ToDo выводит только первые в ключевых словах
 function getArrayOfValues(obj, key, value) {
 	let fileData = Object.values(obj[key])
 	let arr = []
 	fileData.map((entry) => {
-		arr.push(entry[value])
+		arr.push(entry[value][0])
 	})
 	return arr;
 }
 
-function findIndexOfKeyword(obj, str) {
-	let fileKeywords = obj.keywords
-	for (let index in fileKeywords) {
-		if (fileKeywords[index].keyword === langWorker.wordParsing(str).normalize().word) return index;
+// Возвращает ответ с большим количеством совпадений ключевых слов
+function findFileQuestion(obj, arrValues) {
+	let arrQuestions = Object.values(obj.questions)
+	let indexMaxRepeate = 0
+	let valueMaxRepeat = 0
+
+	for (let i = 0; i < arrQuestions.length; i++) {
+		let question = arrQuestions[i]
+		let countRepeats = 0
+		outer: for (let j = 0; j < arrValues.length; j++) {
+			let value = arrValues[j]
+			let arrayKeywords = question.keywords
+			let countKeywords = arrayKeywords.length
+
+			for (let k = 0; k < countKeywords; k++) {
+				if (langWorker.wordParsing(value).normalize().word === arrayKeywords[k]) {
+					countRepeats++
+					continue outer;
+				}
+			}
+			if (countRepeats === countKeywords) return arrQuestions[i];
+		}
+
+		let valueRepeat = countRepeats / question.keywords.length
+		if (valueRepeat > valueMaxRepeat) {
+			valueMaxRepeat = valueRepeat
+			indexMaxRepeate = i
+		}
 	}
-	console.log(langWorker.wordParsing(str).normalize().word)
-	return -1;
+	return arrQuestions[indexMaxRepeate]
 }
+
 
 module.exports = {
 	readFile: readFile,
 	getArrayOfValues: getArrayOfValues,
-	findIndexOfKeyword: findIndexOfKeyword,
+	findFileQuestion: findFileQuestion,
 }

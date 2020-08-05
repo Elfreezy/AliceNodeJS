@@ -22,6 +22,8 @@ function wordParsing(word) {
 }
 
 
+// Сделать массив ключевых слов в одной форме
+
 module.exports = {
 	wordParsing: wordParsing,
 }
