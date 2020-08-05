@@ -38,38 +38,6 @@ const createUserAnswer = (request, sessionState) => {
 	return response;
 }
 
-// @param {Number} state
-const checkButtonState = (state, sessionState) => {
-	switch(state) {
-		case 0:
-			return replies.firstUserAnswer(sessionState);
-		case 1:
-			let fact = getNewFact(Object.entries(FILEDATA.facts), sessionState)
-			return replies.giveFact(fact, sessionState);
-		case 2:
-			return replies.offerKeywords();
-		case 3:
-			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'questions', 'keywords')
-			arrayKeywords = gfn.getRandomArray(arrayKeywords, 5)
-			return replies.giveKeywords(arrayKeywords.join(', '));
-	}
-}
-
-// Получает массив фактов и их id
-// Значит без рандома. Просто до первого непоказанного	<--- Пока так
-// С рандомом. просто вернем массив непоказанных		<--- Как идея, но может долго выполняться
-function getNewFact(arr, sessionState) {
-	if (typeof sessionState.facts_id === 'undefined' || sessionState.facts_id.length >= arr.length) sessionState.facts_id = [];
-	outer: for (let i = 0; i < arr.length; i++) {
-		for (let j in sessionState.facts_id) {
-			if (i == j) continue outer;
-		}
-		sessionState.facts_id.push(i)
-		return arr[i][1];
-	}
-	return -1;
-}
-
 // Базовые интенты игнорируют аудио ответ
 function checkIntents(request, sessionState) {
 	intents = request.nlu.intents
@@ -98,7 +66,60 @@ function checkIntents(request, sessionState) {
 			if (isEmpty(sessionState)) return checkUnknownMessage(request, sessionState);
 			if (sessionState.value === 10) return replies.firstUserAnswer(sessionState);
 			return checkButtonState(1, sessionState)
+		case 'YANDEX.REJECT':
+			return checkButtonState(2, sessionState)
 	}
+}
+
+// В эту ф-цию попадают msg не имеющие интентов
+// Будет производиться проверка session_state
+function checkUnknownMessage(request, sessionState) {
+	let response = isEmpty(request.payload)
+	? checkButtonValue(sessionState)
+	: checkButtonState(request.payload.state, sessionState)
+	return response
+}
+
+// @param {Number} state
+const checkButtonState = (state, sessionState) => {
+	switch(state) {
+		case 0:
+			return replies.firstUserAnswer(sessionState);
+		case 1:
+			let fact = getNewFact(Object.entries(FILEDATA.facts), sessionState)
+			return replies.giveFact(fact, sessionState);
+		case 2:
+			return replies.offerKeywords(sessionState);
+		case 3:
+			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'questions', 'keywords')
+			arrayKeywords = gfn.getRandomArray(arrayKeywords, 5)
+			return replies.giveKeywords(arrayKeywords.join(', '));
+	}
+}
+
+// Функция для распознования содержимого кнопки. Чтобы не забивать case
+// Обнуляем содержимое кнопки
+function checkButtonValue(sessionState) {
+	if (typeof sessionState.lastButtonValue === 'undefined' || sessionState.lastButtonValue === '') return replies.firstUserAnswer(sessionState)
+	let arrValues = sessionState.lastButtonValue.split(' ')
+	sessionState.lastButtonValue = ''
+	let item = reader.findFileQuestion(FILEDATA, arrValues)
+	return replies.getAnswerForKeywoard(item);
+}
+
+// Получает массив фактов и их id
+// Значит без рандома. Просто до первого непоказанного	<--- Пока так
+// С рандомом. просто вернем массив непоказанных		<--- Как идея, но может долго выполняться
+function getNewFact(arr, sessionState) {
+	if (typeof sessionState.facts_id === 'undefined' || sessionState.facts_id.length >= arr.length) sessionState.facts_id = [];
+	outer: for (let i = 0; i < arr.length; i++) {
+		for (let j in sessionState.facts_id) {
+			if (i == j) continue outer;
+		}
+		sessionState.facts_id.push(i)
+		return arr[i][1];
+	}
+	return -1;
 }
 
 // Изменить при масштабировании приложения
@@ -108,15 +129,6 @@ function getButtonKey(value) {
 	if (arr.length === 2) return 3;
 	if (langWorker.wordParsing(arr[0]).normalize().word === 'факт') return 1;
 	return 2;
-}
-
-// В эту ф-цию попадают msg не имеющие интентов
-// Будет производиться проверка session_state
-function checkUnknownMessage(request, sessionState) {
-	let response = isEmpty(request.payload)
-	? replies.firstUserAnswer(sessionState)
-	: checkButtonState(request.payload.state, sessionState)
-	return response
 }
 
 // Проверка на свойства в объекте
