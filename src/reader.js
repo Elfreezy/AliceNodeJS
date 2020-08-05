@@ -4,13 +4,16 @@
 *	Префикс file указывает на принадлежность данных к файлу с аналогичным ключем
 */
 const fs = require('fs');
+const path = require("path");
+
+const langWorker = require('./language_worker.js');
 
 // @param {String} fileName
 function readFile(fileName) {
-	const dataFile = fs.readFileSync(fileName, 'utf8')
+	const filePath = path.resolve(path.join(__dirname, fileName));
+	const dataFile = fs.readFileSync(filePath, 'utf8')
 	return JSON.parse(dataFile);
 }
-
 
 // Достает из obj - {} массив значений с необходимым ключом
 function getArrayOfValues(obj, key, value) {
@@ -22,28 +25,17 @@ function getArrayOfValues(obj, key, value) {
 	return arr;
 }
 
-
-// -------
 function findIndexOfKeyword(obj, str) {
 	let fileKeywords = obj.keywords
 	for (let index in fileKeywords) {
-		if (deleteLastLettersNoun(fileKeywords[index].keyword) === deleteLastLettersNoun(str)) return index;
+		if (fileKeywords[index].keyword === langWorker.wordParsing(str).normalize().word) return index;
 	}
+	console.log(langWorker.wordParsing(str).normalize().word)
 	return -1;
 }
-
-
-// @param {String} keyword
-function deleteLastLettersNoun(arg) {
-	const str = arg.toLowerCase()
-	const pattern = [/(а|ев|ов|ие|ье|е|иями|ями|ами|еи|ии|и|ией|ей|ой|ий|й|иям|ям|ием|ем|ам|ом|о|у|ах|иях|ях|ы|ь|ию|ью|ю|ия|ья|я)$/g, '']
-	return str.replace(pattern[0], pattern[1]);
-}
-
 
 module.exports = {
 	readFile: readFile,
 	getArrayOfValues: getArrayOfValues,
 	findIndexOfKeyword: findIndexOfKeyword,
-	deleteLastLettersNoun: deleteLastLettersNoun,
 }

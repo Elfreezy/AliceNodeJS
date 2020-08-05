@@ -7,13 +7,9 @@ const replies = require('./replies.js')
 const reader = require('./reader.js')
 const gfn = require('./gfn.js')
 
-const path = require("path");
-const filename = "metadata.json";
-const jsonPath = path.resolve(path.join(__dirname, filename));
 
-const FILEDATA = reader.readFile(jsonPath)
-// Если будет много обращений к массиву keywords 
-// const ARRAYKEYWORDS = reader.getArrayOfValues(FILEDATA, 'keywords', 'keyword')
+const FILEDATA = reader.readFile('metadata.json')
+
 
 const server = micro(async (req, res) => {
 	if (req.method !== 'POST') {
@@ -39,7 +35,6 @@ const createUserAnswer = (request, sessionState) => {
 	: checkIntents(request, sessionState)
 	return response;
 }
-
 
 // @param {Number} state
 const checkButtonState = (state, sessionState) => {
@@ -73,7 +68,6 @@ function getNewFact(arr, sessionState) {
 	return -1;
 }
 
-
 // Базовые интенты игнорируют аудио ответ
 function checkIntents(request, sessionState) {
 	intents = request.nlu.intents
@@ -99,7 +93,6 @@ function checkIntents(request, sessionState) {
 	}
 }
 
-
 // Изменить при масштабировании приложения
 function getButtonKey(value) {
 	let arr = value.split(' ')
@@ -116,7 +109,6 @@ function checkUnknownMessage(request, sessionState) {
 	: checkButtonState(request.payload.state, sessionState)
 	return response
 }
-
 
 // Проверка на свойства в объекте
 function isEmpty(obj) {
