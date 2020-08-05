@@ -83,7 +83,13 @@ function checkIntents(request, sessionState) {
 			let buttonKey = getButtonKey(intents.commands.slots.what.value)
 			return checkButtonState(buttonKey, sessionState);
 		case 'toKnow':
-			let arrValues = intents.toKnow.slots.what.value.split(' ')
+			let slotItems = Object.values(intents.toKnow.slots)
+			let arrValues = []
+			slotItems.forEach((entry) => {
+				entry.value.split(' ').forEach((item) =>{
+					arrValues.push(item)
+				})
+			})
 			let item = reader.findFileQuestion(FILEDATA, arrValues)
 			return replies.getAnswerForKeywoard(item);
 		case 'goodbye':

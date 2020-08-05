@@ -86,10 +86,6 @@ exports.getAnswerForKeywoard = (item) => {
 	return {
 		text: item.answer,
     tts: item.tts,
-    buttons: [
-      {title: 'Узнать факт', payload: {state: 1}, hide: true},
-      {title: 'Задать вопрос', payload: {state: 2}, hide: true}
-    ],
     end_session: false
 	};
 }

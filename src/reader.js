@@ -31,8 +31,9 @@ function findFileQuestion(obj, arrValues) {
 	let arrQuestions = Object.values(obj.questions)
 	let indexMaxRepeate = 0
 	let valueMaxRepeat = 0
+	let countValues = arrQuestions.length
 
-	for (let i = 0; i < arrQuestions.length; i++) {
+	for (let i = 0; i < countValues; i++) {
 		let question = arrQuestions[i]
 		let countRepeats = 0
 		outer: for (let j = 0; j < arrValues.length; j++) {
@@ -46,10 +47,10 @@ function findFileQuestion(obj, arrValues) {
 					continue outer;
 				}
 			}
-			if (countRepeats === countKeywords) return arrQuestions[i];
+			if (countRepeats >= countKeywords) return arrQuestions[i];
 		}
 
-		let valueRepeat = countRepeats / question.keywords.length
+		let valueRepeat = (countRepeats / question.keywords.length) * (countRepeats / countValues)
 		if (valueRepeat > valueMaxRepeat) {
 			valueMaxRepeat = valueRepeat
 			indexMaxRepeate = i
