@@ -20,7 +20,7 @@ const server = micro(async (req, res) => {
 	const {request, session, state} = await micro.json(req) // Почитать про async, await
 	const sessionState = state && state.session || {}
 	response = session.new
-    ? replies.welcome()
+    ? replies.welcome(sessionState)
     : createUserAnswer(request, sessionState)
 
     return {
@@ -42,7 +42,7 @@ const createUserAnswer = (request, sessionState) => {
 function checkIntents(request, sessionState) {
 	intents = request.nlu.intents
 	if (isEmpty(intents)) {
-		return replies.firstUserAnswer(sessionState)
+		return replies.firstUserAnswer()
 	}
 	
 	let intent = Object.keys(intents)[0]
@@ -63,11 +63,15 @@ function checkIntents(request, sessionState) {
 		case 'goodbye':
 			return replies.goodbye();
 		case 'YANDEX.CONFIRM':
-			if (isEmpty(sessionState)) return checkUnknownMessage(request, sessionState);
-			if (sessionState.value === 10) return replies.firstUserAnswer(sessionState);
-			return checkButtonState(1, sessionState)
+			if (sessionState.value === 1) return checkButtonState(1, sessionState);
+			if (sessionState.value === 2) return checkItem(sessionState);
+
+			return replies.firstUserAnswer()
 		case 'YANDEX.REJECT':
-			return checkButtonState(2, sessionState)
+			if (sessionState.value === 1) return replies.offerKeywords(1, sessionState);
+			if (sessionState.value === 2) return replies.offerKeywords(sessionState);
+
+			return replies.goodbye()
 	}
 }
 
@@ -75,7 +79,7 @@ function checkIntents(request, sessionState) {
 // Будет производиться проверка session_state
 function checkUnknownMessage(request, sessionState) {
 	let response = isEmpty(request.payload)
-	? checkButtonValue(sessionState)
+	? checkItem(sessionState)
 	: checkButtonState(request.payload.state, sessionState)
 	return response
 }
@@ -84,10 +88,10 @@ function checkUnknownMessage(request, sessionState) {
 const checkButtonState = (state, sessionState) => {
 	switch(state) {
 		case 0:
-			return replies.firstUserAnswer(sessionState);
+			return replies.firstUserAnswer();
 		case 1:
 			let fact = getNewFact(Object.entries(FILEDATA.facts), sessionState)
-			return replies.giveFact(fact, sessionState);
+			return replies.getFact(fact, sessionState);
 		case 2:
 			return replies.offerKeywords(sessionState);
 		case 3:
@@ -99,10 +103,11 @@ const checkButtonState = (state, sessionState) => {
 
 // Функция для распознования содержимого кнопки. Чтобы не забивать case
 // Обнуляем содержимое кнопки
-function checkButtonValue(sessionState) {
-	if (typeof sessionState.lastButtonValue === 'undefined' || sessionState.lastButtonValue === '') return replies.firstUserAnswer(sessionState)
-	let arrValues = sessionState.lastButtonValue.split(' ')
-	sessionState.lastButtonValue = ''
+function checkItem(sessionState) {
+	if (sessionState.item === '') return replies.firstUserAnswer()
+
+	let arrValues = sessionState.item.split(' ')
+	sessionState.item = ''
 	let item = reader.findFileQuestion(FILEDATA, arrValues)
 	return replies.getAnswerForKeywoard(item);
 }

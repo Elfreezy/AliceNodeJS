@@ -1,26 +1,27 @@
 /*
 *   Модуль работы с репликами Алисы
-*   payload.state {1 - факт, 2 - вопрос, 3 - ключевые слова}
+*   payload.state {1 - giveFact, 2 - вопрос, 3 - ключевые слова}
 */
 
 const gfn = require('./gfn.js')
 
 
-exports.welcome = () => {
+exports.welcome = (sessionState) => {
+  sessionState.value = 0
+  sessionState.item = ''
 	const answer = gfn.getRandomElement(['Хочу', 'Продолжить'])
 	return {
 		text: 'Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
     tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа AF. Я вам расскажу интересные вещи, которыми мы занимаемся. Хотите продолжить?',
     buttons: [
-      {title: answer, payload: {state: 0}, hide: true}
+      {title: answer, hide: true}
     ],
     end_session: false
 	};
 }
 
 
-exports.firstUserAnswer = (sessionState) => {
-  sessionState.value = 10
+exports.firstUserAnswer = () => {
   const button = gfn.getRandomElement(['Рассказать', 'Узнать', 'Вопрос', 'Информация'])
 	return {
 		text: 'Хотите погрузиться в мир дизайна и искусства или зададите вопрос о школе?',
@@ -35,8 +36,8 @@ exports.firstUserAnswer = (sessionState) => {
 
 
 // @param {String} fact
-exports.giveFact = (fact, sessionState) => {
-  sessionState.value = 20
+exports.getFact = (fact, sessionState) => {
+  sessionState.value = 1
 	return {
 		text: fact.text,
     tts: `<speaker audio="alice-sounds-game-ping-1.opus">${fact.text}`,
@@ -56,13 +57,14 @@ exports.giveFact = (fact, sessionState) => {
 
 
 exports.offerKeywords = (sessionState) => {
-  const keyword = gfn.getRandomElement(['факультетах', 'курсах', 'фактах', 
+  sessionState.value = 2
+  const keyword = gfn.getRandomElement(['факультетах', 'курсах',
     `факультете ${gfn.getRandomElement(['психологии', 'дизайна'])}`,
     `курсах ${gfn.getRandomElement(['графического дизайна', 'веб-дизайна', 'интерьера'])}`])
-  const question = gfn.getRandomElement(['Предлагаю поговорить о ', 'Рассказать о ', 'Узнайте о ', 'Может поговорим о '])
+  const question = gfn.getRandomElement(['Предлагаю поговорить о ', 'Рассказать о ', 'Узнайте о ', 'Может поговорим о ', 'Давай поговорим о '])
   const button = gfn.getRandomElement(['Давай', 'Вперед', 'Начнем'])
 
-  sessionState.lastButtonValue = keyword
+  sessionState.item = keyword
 	
   return {
 		text: question + keyword,
