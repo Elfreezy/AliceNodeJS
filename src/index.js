@@ -44,14 +44,15 @@ function checkIntents(request, sessionState) {
 	if (isEmpty(intents)) {
 		return replies.firstUserAnswer()
 	}
-	
 	let intent = Object.keys(intents)[0]
+
+	let help = intent === 'YANDEX.HELP' ? 'YANDEX.HELP': 'YANDEX.WHAT_CAN_YOU_DO'
 	switch(intent) {
 		case 'commands':
-			let buttonKey = getButtonKey(intents.commands.slots.what.value)
-			return checkButtonState(buttonKey, sessionState);
-		case 'toKnow':
-			let slotItems = Object.values(intents.toKnow.slots)
+			return getCommand(intents.commands.slots.command.value, sessionState);
+		case 'keywords':
+			let slotItems = Object.values(intents.keywords.slots)
+
 			let arrValues = []
 			slotItems.forEach((entry) => {
 				entry.value.split(' ').forEach((item) =>{
@@ -65,13 +66,13 @@ function checkIntents(request, sessionState) {
 		case 'YANDEX.CONFIRM':
 			if (sessionState.value === 1) return checkButtonState(1, sessionState);
 			if (sessionState.value === 2) return checkItem(sessionState);
-
 			return replies.firstUserAnswer()
 		case 'YANDEX.REJECT':
 			if (sessionState.value === 1) return replies.offerKeywords(1, sessionState);
 			if (sessionState.value === 2) return replies.offerKeywords(sessionState);
-
 			return replies.goodbye()
+		case help:
+			return replies.getHelp()
 	}
 }
 
@@ -84,6 +85,7 @@ function checkUnknownMessage(request, sessionState) {
 	return response
 }
 
+// ToDo Изменить case 3 !!!!
 // @param {Number} state
 const checkButtonState = (state, sessionState) => {
 	switch(state) {
@@ -95,9 +97,7 @@ const checkButtonState = (state, sessionState) => {
 		case 2:
 			return replies.offerKeywords(sessionState);
 		case 3:
-			let arrayKeywords = reader.getArrayOfValues(FILEDATA, 'questions', 'keywords')
-			arrayKeywords = gfn.getRandomArray(arrayKeywords, 5)
-			return replies.giveKeywords(arrayKeywords.join(', '));
+			return replies.getHelp();
 	}
 }
 
@@ -107,6 +107,7 @@ function checkItem(sessionState) {
 	if (sessionState.item === '') return replies.firstUserAnswer()
 
 	let arrValues = sessionState.item.split(' ')
+	console.log(arrValues)
 	sessionState.item = ''
 	let item = reader.findFileQuestion(FILEDATA, arrValues)
 	return replies.getAnswerForKeywoard(item);
@@ -129,11 +130,18 @@ function getNewFact(arr, sessionState) {
 
 // Изменить при масштабировании приложения
 // Аналог функции reader.findIndexOfKeyword для commands
-function getButtonKey(value) {
-	let arr = value.split(' ')
-	if (arr.length === 2) return 3;
-	if (langWorker.wordParsing(arr[0]).normalize().word === 'факт') return 1;
-	return 2;
+function getCommand(command, sessionState) {
+	const commands = ['помощь', 'что ты умеешь', 'поговорим о', 'факт']
+	let index = 0
+	for (let i = 0; i < commands.length; i++) {
+		if (commands[i] === command) {
+			index = i 
+			break;
+		}
+	}
+	if (index === 2) return replies.offerKeywords(sessionState);
+	if (index === 3) return checkButtonState(1, sessionState)
+	return replies.getHelp();
 }
 
 // Проверка на свойства в объекте
