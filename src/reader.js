@@ -47,8 +47,6 @@ function findFileQuestion(obj, arrValues) {
 					continue outer;
 				}
 			}
-			// Поменять условие
-			// if (countRepeats === countKeywords) return arrQuestions[i];
 		}
 
 		let valueRepeat = (countRepeats / question.keywords.length) * (countRepeats / countValues)

@@ -22,7 +22,6 @@ const server = micro(async (req, res) => {
 	response = session.new
     ? replies.welcome(sessionState)
     : createUserAnswer(request, sessionState)
-
     return {
     	response,
     	session_state: sessionState,
@@ -38,12 +37,14 @@ const createUserAnswer = (request, sessionState) => {
 	return response;
 }
 
-// Базовые интенты игнорируют аудио ответ
+// Проверка все intents
 function checkIntents(request, sessionState) {
 	intents = request.nlu.intents
 	if (isEmpty(intents)) {
 		return replies.firstUserAnswer()
 	}
+
+	// проверка
 	let intent = Object.keys(intents)[0]
 
 	let help = intent === 'YANDEX.HELP' ? 'YANDEX.HELP': 'YANDEX.WHAT_CAN_YOU_DO'

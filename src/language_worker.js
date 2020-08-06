@@ -6,7 +6,7 @@
 const Az = require('az');
 
 // Поменять путь до словарей
-Az.Morph.init('../node_modules/az/dicts', function() {});
+Az.Morph.init('./node_modules/az/dicts', function() {});
 
 
 /* 
