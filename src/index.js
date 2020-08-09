@@ -41,7 +41,7 @@ const createUserAnswer = (request, sessionState) => {
 function checkIntents(request, sessionState) {
 	intents = request.nlu.intents
 	if (isEmpty(intents)) {
-		return replies.firstUserAnswer()
+		return replies.firstUserAnswer();
 	}
 
 	// проверка
@@ -60,7 +60,7 @@ function checkIntents(request, sessionState) {
 					arrValues.push(item)
 				})
 			})
-			let item = reader.findFileQuestion(FILEDATA, arrValues)
+			let item = reader.findFileQuestion(FILEDATA, arrValues).question
 			return replies.getAnswerForKeywoard(item);
 		case 'goodbye':
 			return replies.goodbye();
@@ -69,7 +69,7 @@ function checkIntents(request, sessionState) {
 			if (sessionState.value === 2) return checkItem(sessionState);
 			return replies.firstUserAnswer()
 		case 'YANDEX.REJECT':
-			if (sessionState.value === 1) return replies.offerKeywords(1, sessionState);
+			if (sessionState.value === 1) return replies.offerKeywords(sessionState);
 			if (sessionState.value === 2) return replies.offerKeywords(sessionState);
 			return replies.goodbye()
 		case help:
@@ -81,7 +81,7 @@ function checkIntents(request, sessionState) {
 // Будет производиться проверка session_state
 function checkUnknownMessage(request, sessionState) {
 	let response = isEmpty(request.payload)
-	? checkItem(sessionState)
+	? checkTokens(request, sessionState)
 	: checkButtonState(request.payload.state, sessionState)
 	return response
 }
@@ -99,19 +99,32 @@ const checkButtonState = (state, sessionState) => {
 			return replies.offerKeywords(sessionState);
 		case 3:
 			return replies.getHelp();
+		case 4:
+			return checkItem(sessionState);
 	}
 }
 
 // Функция для распознования содержимого кнопки. Чтобы не забивать case
 // Обнуляем содержимое кнопки
+// Со временем поменять на проверку только id!!!
 function checkItem(sessionState) {
-	if (sessionState.item === '') return replies.firstUserAnswer()
+	const item = sessionState.item
+	if (item === '') return replies.firstUserAnswer();
+	if (typeof item === 'number') {
+		if (item === -1) return checkButtonState(3, sessionState);
+		return replies.getAnswerForKeywoard(FILEDATA.questions[item]);
+	}
 
-	let arrValues = sessionState.item.split(' ')
-	console.log(arrValues)
+	let arrValues = item.split(' ')
 	sessionState.item = ''
-	let item = reader.findFileQuestion(FILEDATA, arrValues)
-	return replies.getAnswerForKeywoard(item);
+	let question = reader.findFileQuestion(FILEDATA, arrValues).question
+	return replies.getAnswerForKeywoard(question);
+}
+
+function checkTokens(request, sessionState) {
+	const arrTokens = request.nlu.tokens
+	const question = reader.findFileQuestion(FILEDATA, arrTokens)
+	return replies.offerQuestion(question, sessionState)
 }
 
 // Получает массив фактов и их id

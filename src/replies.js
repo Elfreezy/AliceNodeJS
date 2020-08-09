@@ -11,8 +11,8 @@ exports.welcome = (sessionState) => {
   sessionState.item = ''
 	const answer = gfn.getRandomElement(['Хочу', 'Продолжить'])
 	return {
-		text: 'Вас приветсвует школа ArtFuture. Я отвечу на повросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
-    tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа ArtFuture. Я отвечу на повросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
+		text: 'Вас приветсвует школа ArtFuture. Я отвечу на вопросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
+    tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа ArtFuture. Я отвечу на вопросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
     buttons: [
       {title: answer, hide: true}
     ],
@@ -56,6 +56,7 @@ exports.getFact = (fact, sessionState) => {
 }
 
 // Почему яндекс игнорирует 'курсах' ?
+// Поменять проверку строки item на id
 exports.offerKeywords = (sessionState) => {
   sessionState.value = 2
   const keyword = gfn.getRandomElement(['факультетах',
@@ -70,17 +71,33 @@ exports.offerKeywords = (sessionState) => {
 		text: `${question} ${keyword}?`,
     tts: question + keyword,
     buttons: [
-      {title: button, hide: true},
+      {title: button, payload: {state: 4},hide: true},
       {title: 'Другое', payload: {state: 2}, hide: true}
     ],
     end_session: false
 	};
 }
 
+exports.offerQuestion = (question, sessionState) => {
+  const button = gfn.getRandomElement(['Подробнее', 'Продолжить', 'Узнать больше'])
+  const command = gfn.getRandomElement(['Рассказать о', 'Узнайть о'])
+  sessionState.item = question.id
+  const text = question.id === -1 ? question.question.offering : `${command} ${question.question.offering}?`
+  return {
+    text: text,
+    tts: text,
+    buttons: [
+      {title: button, payload: {state: 4}, hide: true},
+      {title: 'Помощь', hide: true}
+    ],
+    end_session: false
+  };
+}
+
 
 // @param {String} fact
 exports.getAnswerForKeywoard = (item) => {
-  const button = gfn.getRandomElement(['Следующее', 'Продолжить', 'Узнать больше'])
+  const button = gfn.getRandomElement(['Продолжить', 'Узнать больше'])
   return {
     text: item.answer,
     tts: item.tts,

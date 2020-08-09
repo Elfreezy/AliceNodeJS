@@ -27,11 +27,13 @@ function getArrayOfValues(obj, key, value) {
 }
 
 // Возвращает ответ с большим количеством совпадений ключевых слов
+// + индекс
 function findFileQuestion(obj, arrValues) {
 	let arrQuestions = Object.values(obj.questions)
 	let indexMaxRepeate = 0
 	let valueMaxRepeat = 0
 	let countValues = arrQuestions.length
+	let finded = false
 
 	for (let i = 0; i < countValues; i++) {
 		let question = arrQuestions[i]
@@ -42,7 +44,13 @@ function findFileQuestion(obj, arrValues) {
 			let countKeywords = arrayKeywords.length
 
 			for (let k = 0; k < countKeywords; k++) {
-				if (langWorker.wordParsing(value).normalize().word === arrayKeywords[k]) {
+				let word = ''
+				try {
+					 word = langWorker.wordParsing(value).normalize().word
+				} catch (e){
+					continue outer;
+				}
+				if (word === arrayKeywords[k]) {
 					countRepeats++
 					continue outer;
 				}
@@ -50,12 +58,14 @@ function findFileQuestion(obj, arrValues) {
 		}
 
 		let valueRepeat = (countRepeats / question.keywords.length) * (countRepeats / countValues)
+		if (valueRepeat !== 0) finded = true
 		if (valueRepeat > valueMaxRepeat) {
 			valueMaxRepeat = valueRepeat
 			indexMaxRepeate = i
 		}
 	}
-	return arrQuestions[indexMaxRepeate]
+	if(finded) return {'id': indexMaxRepeate, 'question': arrQuestions[indexMaxRepeate]};
+	return {'id': -1, 'question': {'offering': 'Ничего не найдено'}};	
 }
 
 
