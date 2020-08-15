@@ -45,9 +45,9 @@ function checkIntents(request, sessionState) {
 	}
 
 	// проверка
-	let intent = Object.keys(intents)[0]
+	const intent = Object.keys(intents)[0]
 
-	let help = intent === 'YANDEX.HELP' ? 'YANDEX.HELP': 'YANDEX.WHAT_CAN_YOU_DO'
+	const help = intent === 'YANDEX.HELP' ? 'YANDEX.HELP': 'YANDEX.WHAT_CAN_YOU_DO'
 	switch(intent) {
 		case 'commands':
 			return getCommand(intents.commands.slots.command.value, sessionState);
@@ -69,8 +69,8 @@ function checkIntents(request, sessionState) {
 			if (sessionState.value === 2) return checkItem(sessionState);
 			return replies.firstUserAnswer()
 		case 'YANDEX.REJECT':
-			if (sessionState.value === 1) return replies.offerKeywords(sessionState);
-			if (sessionState.value === 2) return replies.offerKeywords(sessionState);
+			if (sessionState.value === 1) return replies.offerKeywords(Object.entries(FILEDATA.questions), sessionState);
+			if (sessionState.value === 2) return replies.offerKeywords(Object.entries(FILEDATA.questions), sessionState);
 			return replies.goodbye()
 		case help:
 			return replies.getHelp()
@@ -96,7 +96,7 @@ const checkButtonState = (state, sessionState) => {
 			let fact = getNewFact(Object.entries(FILEDATA.facts), sessionState)
 			return replies.getFact(fact, sessionState);
 		case 2:
-			return replies.offerKeywords(sessionState);
+			return replies.offerKeywords(Object.entries(FILEDATA.questions), sessionState);
 		case 3:
 			return replies.getHelp();
 		case 4:
@@ -153,7 +153,7 @@ function getCommand(command, sessionState) {
 			break;
 		}
 	}
-	if (index === 2) return replies.offerKeywords(sessionState);
+	if (index === 2) return replies.offerKeywords(Object.entries(FILEDATA.questions), sessionState);
 	if (index === 3) return checkButtonState(1, sessionState)
 	return replies.getHelp();
 }

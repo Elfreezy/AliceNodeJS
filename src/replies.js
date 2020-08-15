@@ -9,7 +9,7 @@ const gfn = require('./gfn.js')
 exports.welcome = (sessionState) => {
   sessionState.value = 0
   sessionState.item = ''
-	const answer = gfn.getRandomElement(['Хочу', 'Продолжить'])
+	const answer = gfn.getRandomElement(['Хочу', 'Да'])
 	return {
 		text: 'Вас приветсвует школа ArtFuture. Я отвечу на вопросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
     tts: '<speaker audio="alice-music-harp-1.opus">Вас приветсвует школа ArtFuture. Я отвечу на вопросы касающиеся нашей школы и поделюсь интересными фактами из мира дизайна. Хотите продолжить?',
@@ -56,20 +56,17 @@ exports.getFact = (fact, sessionState) => {
 }
 
 // Почему яндекс игнорирует 'курсах' ?
-// Поменять проверку строки item на id
-exports.offerKeywords = (sessionState) => {
+// На вход [[str(questions_key), dict(questions_item)], [.., ..], [.., ..]]
+exports.offerKeywords = (questions, sessionState) => {
   sessionState.value = 2
-  const keyword = gfn.getRandomElement(['факультетах',
-    `факультете ${gfn.getRandomElement(['психологии', 'дизайна'])}`,
-    `курсе ${gfn.getRandomElement(['графического дизайна', 'веб дизайна', 'декорирования интерьера'])}`])
-  const question = gfn.getRandomElement(['Предлагаю поговорить о ', 'Рассказать о ', 'Узнайте о ', 'Может поговорим о ', 'Давай поговорим о '])
+  const question = gfn.getRandomElement(questions)
   const button = gfn.getRandomElement(['Давай', 'Хорошо', 'Да'])
 
-  sessionState.item = keyword
+  sessionState.item = Number(question[0])
 	
   return {
-		text: `${question} ${keyword}?`,
-    tts: question + keyword,
+		text: `Частый вопрос ${question[1].offering}`,
+    tts: `Частый вопрос ${question[1].offering}`,
     buttons: [
       {title: button, payload: {state: 4},hide: true},
       {title: 'Другое', payload: {state: 2}, hide: true}
